@@ -26,7 +26,7 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
 }
 
-.button:hover {
+.buttonSubmit:hover {
     background-color: rgb(155, 155, 155);
 }
 
