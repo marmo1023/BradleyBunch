@@ -1,0 +1,118 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.main {
+    font-family: 'Courier New', Courier, monospace;
+    text-align: center;
+    margin: 0 auto;
+}
+
+.box1 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.buttonSubmit {
+    font-family: 'Courier New', Courier, monospace;
+    padding: 10px;
+    margin: 10px;
+    background-color: rgb(216, 216, 216);
+    border-radius: 5px;
+    border: 1px solid black;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+}
+
+.button:hover {
+    background-color: rgb(155, 155, 155);
+}
+
+header {
+    height: 100px;
+    width: 100%;
+    background-color: rgb(66, 104, 69);
+}
+
+.displayInfo {
+    color: rgb(248, 238, 225);
+    font-weight: bold;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.buttonContainer {
+    padding-top: 50px;
+}
+
+.holdQuit {
+    padding-top: 50px;
+    margin: 0 auto;
+    width: 60%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.buttonMain {
+    padding: 20px;
+    font-size: 40px;
+    border-radius: 10px;
+    border: 1px solid rgb(66, 104, 69);
+    color: rgb(66, 104, 69);
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+}
+
+.buttonMain:hover {
+    background-color: rgb(155, 155, 155);
+}
+
+.buySellMainDiv {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+/* CSS For Slide bar */
+.slidecontainer {
+    padding-top: 50px;
+    width: 100%;
+}
+
+.slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 15px;
+    border-radius: 5px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+
+.slider:hover {
+    opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: rgb(66, 104, 69);
+    cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: rgb(66, 104, 69);
+    cursor: pointer;
+}
