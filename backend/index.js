@@ -1,28 +1,17 @@
-const express = require("express");
-const app = express();
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import stockRoute from './routes/stocks.js';
 
-const cors = require("cors");
-require("dotenv").config({ path: "./config.env" });
+dotenv.config({ path: "./config.env" });
+
+const app = express();
+const port = process.env.PORT;
 
 app.use(cors());
 app.use(express.json());
-
-app.use(require("./routes/record"));
-
-const dbo = require("./conn");
-
-const port = process.env.PORT;
-
-app.get("/", (req, res) => {
-    res.send("Hello, World!");
-});
+app.use('/api', stockRoute);
 
 app.listen(port, () => {
-
-    dbo.connectToServer(function (err) {
-        if (err) {
-            console.err(err);
-        }
-    });
     console.log(`Server is running on port: ${port}`);
 });
