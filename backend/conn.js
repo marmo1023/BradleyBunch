@@ -19,8 +19,8 @@ module.exports = {
                 await client.connect();
                 await client.db("admin").command({ ping: 1 });
                 console.log("Pinged your deployment. You successfully connected to MongoDB!");
-                // _db = client.db("market");
-                // console.log("Successfully connected to market collection");
+                _db = client.db("stockmarket");
+                console.log("Successfully connected to stockmarket collection");
             } finally {
                 //console.log("Closing the client");
                 //await client.close();
