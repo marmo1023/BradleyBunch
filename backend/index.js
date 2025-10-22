@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 
 const cors = require("cors");
-require("dotenv").config({ path: "./config.env"});
+require("dotenv").config({ path: "./config.env" });
 
 app.use(cors());
 app.use(express.json());
@@ -18,8 +18,8 @@ app.get("/", (req, res) => {
 });
 
 app.listen(port, () => {
-    
-    dbo.connectToServer(function(err) {
+
+    dbo.connectToServer(function (err) {
         if (err) {
             console.err(err);
         }
