@@ -39,7 +39,7 @@ export function executeTrade(action, amount) {
             simulationState.equityHoldings -= amount;
         }
     }
-    //Quite action: sells all shares
+    //Quit action: sells all shares
     else if (action === 'quit') {
         simulationState.cashReserve += simulationState.equityHoldings * currentPrice;
         simulationState.equityHoldings = 0;
@@ -51,6 +51,13 @@ export function executeTrade(action, amount) {
     //Hold action: null, just advances day
     simulationState.transactionHistory.push({ day: dayIndex, price: currentPrice, action });
 
+    if (dayIndex + 1 >= simulationState.prices.length) {
+        return {
+            simulationEnded: true,
+            cashReserve: simulationState.cashReserve,
+            equityHoldings: simulationState.equityHoldings,
+        };
+    }
     //next day
     simulationState.currentDay++;
     return {

@@ -11,26 +11,30 @@ router.post('/initialize', async (req, res) => {
     const prices = await getStocks(ticker);
     //180 days is approximately 6 months
     if (!prices || prices.length < 180) {
-      return res.status(400).send('Not enough data');
+      return res.status(400).json({ error: 'Not enough data' });
     }
     //start simulation
     const initialPrice = initializeSimulation(ticker, prices);
     //send price
     res.json({ initialPrice });
   } catch (err) {
-    res.status(500).send('Cannot get data for selected ticker');
+    res.status(err.status || 500).json({ error: err.message });
   }
+
 });
 
 //function for trading stock
 router.post('/trade', (req, res) => {
   //action = buy, sell, hold or quit; amount is how many stocks
   const { action, amount } = req.body;
-
-  //executes trade
-  const result = executeTrade(action, amount);
-  if (!result) return res.status(400).send('Not enough data');
-  res.json(result);
+  try {
+    //executes trade
+    const result = executeTrade(action, amount);
+    if (!result) return res.status(400).json({ error: 'Not enough data' });
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 export default router;
