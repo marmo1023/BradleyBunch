@@ -6,7 +6,7 @@ import yahooFinance from 'yahoo-finance2';
 export async function getStocks(ticker) {
   try {
     const history = await yahooFinance.historical(ticker, {
-      period1: '2023-01-01',
+      period1: '2000-01-01',
       interval: '1d',
     });
 
