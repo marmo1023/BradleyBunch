@@ -73,22 +73,23 @@ export default function HomePageDisplay() {
     async function homeToMain(e) {
         e.preventDefault();
         try {
-            const response = await fetch('http://localhost:5000/api/initialize', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ticker }),
-            });
-            const data = await response.json();
-            if (!ticker) {
-                alert('Please enter a ticker symbol.');
-                return;
-            }
-            if (!response.ok) {
-                throw new Error(data.error || 'Ticker not found or insufficient data');
-            }
-            setCurrentPrice(data.initialPrice);
+            // const response = await fetch('http://localhost:5000/api/initialize', {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify({ ticker }),
+            // });
+            // const data = await response.json();
+            // if (!ticker) {
+            //     alert('Please enter a ticker symbol.');
+            //     return;
+            // }
+            // if (!response.ok) {
+            //     throw new Error(data.error || 'Ticker not found or insufficient data');
+            // }
+            //setCurrentPrice(data.initialPrice);
             setShowHomepage(false);
             setShowMainpage(true);
+            setShowBuySellpage(false);
         } catch (err) {
             alert(err.message);
         }
@@ -132,6 +133,10 @@ export default function HomePageDisplay() {
         }
     }
 
+    async function Hold(){
+        setDaysSimulated(daysSimulated+1);
+    }
+
     return (
         <div className="main">  {/*Main div*/}
 
@@ -163,8 +168,8 @@ export default function HomePageDisplay() {
 
                 <header>
                     <div className="displayInfo">
-                        <p>Current Ticker: ${ticker}</p>
-                        <p>Days Played: ${daysSimulated}</p>
+                        <p>Current Ticker: {ticker}</p>
+                        <p>Days Played: {daysSimulated}</p>
                         <p>Overall Gain ${overallGain.toFixed(2)}</p>
                         <p>Bank: ${cashReserve.toFixed(2)}</p>
                     </div>
@@ -179,12 +184,13 @@ export default function HomePageDisplay() {
                         <input className="buttonMain"
                             type="submit"
                             value="HOLD"
-                            onClick={() => sendTrade('hold')}
+                            //onClick={() => sendTrade('hold')}
+                            onClick={Hold}
                         />
                         <input className="buttonMain"
                             type="submit"
                             value="QUIT"
-                            onClick={() => sendTrade('quit')}
+                            //onClick={() => sendTrade('quit')}
                         />
                     </div>
                 </div>
@@ -196,8 +202,8 @@ export default function HomePageDisplay() {
                 <div className="buysellpage">
                     <header>
                         <div className="displayInfo">
-                            <p>Current Ticker: ${ticker}</p>
-                            <p>Days Played: ${daysSimulated}</p>
+                            <p>Current Ticker: {ticker}</p>
+                            <p>Days Played: {daysSimulated}</p>
                             <p>Overall Gain ${overallGain.toFixed(2)}</p>
                             <p>Bank: ${cashReserve.toFixed(2)}</p>
                         </div>
@@ -235,13 +241,15 @@ export default function HomePageDisplay() {
                                 className="buttonSubmit"
                                 type="submit"
                                 value="Buy"
-                                onClick={() => sendTrade('buy')}
+                                //onClick={() => sendTrade('buy')}
+                                onClick={homeToMain}
                             />
                             <input
                                 className="buttonSubmit"
                                 type="submit"
                                 value="Sell"
-                                onClick={() => sendTrade('sell')}
+                                //onClick={() => sendTrade('sell')}
+                                onClick={homeToMain}
                             />
                         </div>
                     </div>
