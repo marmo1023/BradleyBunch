@@ -1,9 +1,9 @@
-import { MongoClient, ServerApiVersion } from 'mongodb';
+const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = process.env.ATLAS_URI;
 
 let _db;
 
-export const connectToServer = (callback) => {
+const connectToServer = (callback) => {
   const client = new MongoClient(uri, {
     serverApi: {
       version: ServerApiVersion.v1,
@@ -13,20 +13,20 @@ export const connectToServer = (callback) => {
   });
 
   async function run() {
-    try {
-      await client.connect();
-      await client.db("admin").command({ ping: 1 });
-      console.log("Connected to MongoDB!");
-      _db = client.db("users");
-    } catch (err) {
-      console.error(err);
-    }
+    await client.connect();
+    await client.db('admin').command({ ping: 1 });
+    console.log('Connected to MongoDB!');
+    _db = client.db('users');
   }
 
-  run().then(() => callback()).catch(callback);
+  run()
+    .then(() => { if (callback) callback(); })
+    .catch((err) => { console.error(err); if (callback) callback(err); });
 };
 
-export const getDb = () => {
-  if (!_db) throw new Error("DB not initialized");
+const getDb = () => {
+  if (!_db) throw new Error('DB not initialized');
   return _db;
 };
+
+module.exports = { connectToServer, getDb };

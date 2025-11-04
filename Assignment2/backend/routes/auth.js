@@ -12,11 +12,11 @@ module.exports = (dbInstance) => {
   // Register
   router.post('/register', async (req, res) => {
     const { username, password } = req.body;
-    const existing = await users.findOne({ username });
-    if (existing) return res.status(400).json({ error: 'User exists' });
     if (!username || !password) {
       return res.status(400).json({ error: 'Username and password required' });
     }
+    const existing = await users.findOne({ username });
+    if (existing) return res.status(400).json({ error: 'User exists' });
 
     const salt = crypto.randomBytes(16).toString('hex');
     const hashed = hashPassword(password, salt);

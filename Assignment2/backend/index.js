@@ -1,10 +1,11 @@
-import express from 'express';
-import session from 'express-session';
-import dotenv from 'dotenv';
-dotenv.config();
-import MongoStore from 'connect-mongo';
-import cors from 'cors';
-import { connectToServer, getDb } from './conn.js';
+const express = require('express');
+const session = require('express-session');
+const dotenv = require('dotenv');
+dotenv.config({ path: './config.env' });
+const MongoStore = require('connect-mongo');
+const cors = require('cors');
+const dbo = require('./conn.js');
+const authRoutes = require('./routes/auth.js');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -24,16 +25,15 @@ app.use(session({
   cookie: { maxAge: 1000 * 60 * 60 * 24 } // 1 day
 }));
 
-connectToServer();
+dbo.connectToServer((err) => {
+  if (err) {
+    console.error('DB connection error:', err);
+    process.exit(1);
+  }
 
-app.listen(port, () => {
-  dbo.connectToServer((err) => {
-    if (err) {
-      console.error('DB connection error:', err);
-      process.exit(1);
-    }
-    const authRoutes = require('./routes/auth.js')(dbo);
-    app.use('/api/auth', authRoutes);
+  app.use('/api/auth', authRoutes(dbo));
+
+  app.listen(port, () => {
     console.log(`Server running on port ${port}`);
   });
 });
