@@ -6,8 +6,7 @@ import "./styles.css";
 
 const container = document.getElementById("root");
 const root = createRoot(container);
-// hello
-// hello 2
+
 root.render(
     <React.StrictMode>
         <BrowserRouter>
