@@ -13,19 +13,25 @@ const connectToServer = (callback) => {
   });
 
   async function run() {
-    await client.connect();
-    await client.db('admin').command({ ping: 1 });
-    console.log('Connected to MongoDB!');
-    _db = client.db('users');
+    try {
+      await client.connect();
+      await client.db('admin').command({ ping: 1 });
+      console.log('Connected to MongoDB');
+      _db = client.db('banking');
+      if (callback) callback();
+    } catch (err) {
+      console.error('Connection failed:', err);
+      if (callback) callback(err);
+    }
   }
 
-  run()
-    .then(() => { if (callback) callback(); })
-    .catch((err) => { console.error(err); if (callback) callback(err); });
+  run();
 };
 
 const getDb = () => {
-  if (!_db) throw new Error('DB not initialized');
+  if (!_db) {
+    throw new Error('Database not initialized');
+  }
   return _db;
 };
 
