@@ -25,33 +25,47 @@ export default function Exchange() {
 
     return (
         <div>
-            <h2>Deposit / Withdraw</h2>
+            <header></header>
+            <h1>Deposit / Withdraw</h1>
 
-            <label>Account Type:</label>
-            <select value={accountType} onChange={e => setAccountType(e.target.value)}>
-                <option value="checking">Checking</option>
-                <option value="savings">Savings</option>
-                <option value="other">Other</option>
-            </select>
+            <div class="exchangeContainer">
+                <div class="container2">
+                    <label>Account Type:</label>
+                    <select class="textbox" value={accountType} onChange={e => setAccountType(e.target.value)}>
+                        <option value="checking">Checking</option>
+                        <option value="savings">Savings</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
 
-            <label>Amount:</label>
-            <input
-                type="number"
-                value={amount}
-                onChange={e => setAmount(e.target.value)}
-                placeholder="Enter amount"
-            />
+                <div class="container2">
+                    <label>Amount:</label>
+                    <input
+                        class="textbox"
+                        type="number"
+                        value={amount}
+                        onChange={e => setAmount(e.target.value)}
+                        placeholder="Enter amount"
+                    />
+                </div>
 
-            <label>Category:</label>
-            <input
-                value={category}
-                onChange={e => setCategory(e.target.value)}
-                placeholder="Enter category"
-            />
+                <div class="container2">
+                    <label>Category:</label>
+                    <input
+                        class="textbox"
+                        value={category}
+                        onChange={e => setCategory(e.target.value)}
+                        placeholder="Enter category"
+                    />
+                </div>
 
-            <button onClick={() => handleExchange('deposit')}>Deposit</button>
-            <button onClick={() => handleExchange('withdraw')}>Withdraw</button>
-            <button onClick={() => navigate('/account')}>Cancel</button>
+            </div>
+
+            <div>
+                <button class="buttons" onClick={() => handleExchange('deposit')}>Deposit</button>
+                <button class="buttons" onClick={() => handleExchange('withdraw')}>Withdraw</button>
+                <button class="buttons" onClick={() => navigate('/account')}>Cancel</button>
+            </div>
         </div>
     );
 }

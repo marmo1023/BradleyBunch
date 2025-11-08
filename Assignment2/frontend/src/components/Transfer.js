@@ -33,39 +33,53 @@ export default function Transfer() {
 
     return (
         <div>
-            <h2>Transfer Funds</h2>
+            <header></header>
+            <h1>Transfer Funds</h1>
 
-            <label>From Your Account:</label>
-            <select value={fromType} onChange={e => setFromType(e.target.value)}>
-                <option value="checking">Checking</option>
-                <option value="savings">Savings</option>
-                <option value="other">Other</option>
-            </select>
+            <div class="exchangeContainer">
+                <div class="container2">
+                    <label>From Your Account:</label>
+                    <select class="textbox" value={fromType} onChange={e => setFromType(e.target.value)}>
+                        <option value="checking">Checking</option>
+                        <option value="savings">Savings</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
 
-            <label>Recipient's User ID:</label>
-            <input
-                value={toUserId}
-                onChange={e => setToUserId(e.target.value)}
-                placeholder="Enter recipient ID"
-            />
+                <div class="container2">
+                    <label>Recipient's User ID:</label>
+                    <input
+                        class="textbox"
+                        value={toUserId}
+                        onChange={e => setToUserId(e.target.value)}
+                        placeholder="Enter recipient ID"
+                    />
+                </div>
 
-            <label>Recipient's Account Type:</label>
-            <select value={toAccountIndex} onChange={e => setToAccountIndex(e.target.value)}>
-                <option value={0}>Checking</option>
-                <option value={1}>Savings</option>
-                <option value={2}>Other</option>
-            </select>
+                <div class="container2">
+                    <label>Recipient's Account Type:</label>
+                    <select class="textbox" value={toAccountIndex} onChange={e => setToAccountIndex(e.target.value)}>
+                        <option value={0}>Checking</option>
+                        <option value={1}>Savings</option>
+                        <option value={2}>Other</option>
+                    </select>
+                </div>
 
-            <label>Amount:</label>
-            <input
-                type="number"
-                value={amount}
-                onChange={e => setAmount(e.target.value)}
-                placeholder="Enter amount"
-            />
+                <div class="container2">
+                    <label>Amount:</label>
+                    <input
+                        class="textbox"
+                        type="number"
+                        value={amount}
+                        onChange={e => setAmount(e.target.value)}
+                        placeholder="Enter amount"
+                    />
+                </div>
+            </div>
 
-            <button onClick={handleTransfer}>Transfer</button>
-            <button onClick={() => navigate('/account')}>Cancel</button>
+            <button class="buttons" onClick={handleTransfer}>Transfer</button>
+            <button class="buttons" onClick={() => navigate('/account')}>Cancel</button>
+
         </div>
     );
 }

@@ -10,10 +10,25 @@ export default function Select() {
 
     return (
         <div>
-            <h2>Select Account</h2>
-            <button onClick={() => goToAccount('savings')}>Savings</button>
-            <button onClick={() => goToAccount('checking')}>Checking</button>
-            <button onClick={() => goToAccount('other')}>Other</button>
+            <header></header>
+            <h1>Select Account</h1>
+            <div class="accountContainer">
+                <div class="accountBox">
+                    <h2>Savings</h2>
+                    <p>Current Balance:</p>
+                    <button class="buttons" onClick={() => goToAccount('savings')}>Select</button>
+                </div>
+                <div class="accountBox">
+                    <h2>Checking</h2>
+                    <p>Current Balance:</p>
+                    <button class="buttons" onClick={() => goToAccount('checking')}>Select</button>
+                </div>
+                <div class="accountBox">
+                    <h2>Other</h2>
+                    <p>Current Balance:</p>
+                    <button class="buttons" onClick={() => goToAccount('other')}>Select</button>
+                </div>
+            </div>
         </div>
     );
 }

@@ -30,7 +30,12 @@ export default function Account() {
 
   return (
     <div>
-      <h2>Current Balance: ${totalBalance.toFixed(2)}</h2>
+      <header></header>
+      <div class="accountActionHeader">
+        <h1>Selected Account:</h1>
+        <h2>Current Balance: ${totalBalance.toFixed(2)}</h2>
+
+      </div>
 
       {accounts.map((acc, i) => (
         <div
@@ -45,11 +50,13 @@ export default function Account() {
           <strong>{acc.label}</strong> ({acc.type}) — ${acc.balance.toFixed(2)}
         </div>
       ))}
-
-      <button onClick={() => navigate('/exchange')}>Deposit/Withdraw</button>
-      <button onClick={() => navigate('/history')}>History</button>
-      <button onClick={() => navigate('/transfer')}>Transfer</button>
-      <button onClick={handleLogout}>Logout</button>
+      <h3>Choose an action:</h3>
+      <div class="accountActions">
+        <button class="buttons" onClick={() => navigate('/exchange')}>Deposit/Withdraw</button>
+        <button class="buttons" onClick={() => navigate('/history')}>History</button>
+        <button class="buttons" onClick={() => navigate('/transfer')}>Transfer</button>
+        <button class="buttons" onClick={handleLogout}>Logout</button>
+      </div>
     </div>
   );
-}
+} 

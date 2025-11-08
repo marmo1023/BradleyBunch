@@ -26,16 +26,19 @@ export default function History() {
 
     return (
         <div>
-            <h2>Transaction History</h2>
+            <header></header>
+            <h1>Transaction History</h1>
 
-            <div>
-                <button onClick={() => filterByType('savings')}>Savings</button>
-                <button onClick={() => filterByType('checking')}>Checking</button>
-                <button onClick={() => filterByType('other')}>Other</button>
-                <button onClick={() => filterByType('all')}>All</button>
+
+            <div class="filterBySection">
+                <h3>Filter By:</h3>
+                <button class="buttons" onClick={() => filterByType('savings')}>Savings</button>
+                <button class="buttons" onClick={() => filterByType('checking')}>Checking</button>
+                <button class="buttons" onClick={() => filterByType('other')}>Other</button>
+                <button class="buttons" onClick={() => filterByType('all')}>All</button>
             </div>
 
-            <table border="1" cellPadding="5" cellSpacing="0">
+            <table class="historyTable" border="1" cellPadding="5" cellSpacing="0">
                 <thead>
                     <tr>
                         <th>Date</th>
@@ -43,6 +46,20 @@ export default function History() {
                         <th>Type</th>
                         <th>Account</th>
                         <th>Category</th>
+                    </tr>
+                    <tr>
+                        <td>Test</td>
+                        <td>Test</td>
+                        <td>Test</td>
+                        <td>Test</td>
+                        <td>Test</td>
+                    </tr>
+                    <tr>
+                        <td>Test</td>
+                        <td>Test</td>
+                        <td>Test</td>
+                        <td>Test</td>
+                        <td>Test</td>
                     </tr>
                 </thead>
                 <tbody>
@@ -59,7 +76,7 @@ export default function History() {
             </table>
 
             <div>
-                <button onClick={() => window.history.back()}>Cancel</button>
+                <button class="buttons" onClick={() => window.history.back()}>Cancel</button>
             </div>
         </div>
     );
