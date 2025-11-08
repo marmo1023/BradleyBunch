@@ -2,7 +2,6 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "type": "module",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
@@ -11,10 +10,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "connect-mongo": "^5.1.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
-    "mongodb": "^6.20.0",
-    "yahoo-finance2": "^3.10.0"
+    "express-session": "^1.18.2",
+    "mongodb": "^6.20.0"
   }
 }
