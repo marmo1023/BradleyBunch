@@ -12,21 +12,21 @@ export default function Select() {
         <div>
             <header></header>
             <h1>Select Account</h1>
-            <div class="accountContainer">
-                <div class="accountBox">
+            <div className="accountContainer">
+                <div className="accountBox">
                     <h2>Savings</h2>
                     <p>Current Balance:</p>
-                    <button class="buttons" onClick={() => goToAccount('savings')}>Select</button>
+                    <button className="buttons" onClick={() => goToAccount('savings')}>Select</button>
                 </div>
-                <div class="accountBox">
+                <div className="accountBox">
                     <h2>Checking</h2>
                     <p>Current Balance:</p>
-                    <button class="buttons" onClick={() => goToAccount('checking')}>Select</button>
+                    <button className="buttons" onClick={() => goToAccount('checking')}>Select</button>
                 </div>
-                <div class="accountBox">
+                <div className="accountBox">
                     <h2>Other</h2>
                     <p>Current Balance:</p>
-                    <button class="buttons" onClick={() => goToAccount('other')}>Select</button>
+                    <button className="buttons" onClick={() => goToAccount('other')}>Select</button>
                 </div>
             </div>
         </div>

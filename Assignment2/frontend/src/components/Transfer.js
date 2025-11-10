@@ -26,49 +26,43 @@ export default function Transfer() {
         if (data.success) {
             alert('Transfer successful');
             navigate('/account');
-        } else {
-            alert(data.error);
-        }
+        } else alert(data.error);
     };
 
     return (
         <div>
             <header></header>
             <h1>Transfer Funds</h1>
-
-            <div class="exchangeContainer">
-                <div class="container2">
+            <div className="exchangeContainer">
+                <div className="container2">
                     <label>From Your Account:</label>
-                    <select class="textbox" value={fromType} onChange={e => setFromType(e.target.value)}>
+                    <select className="textbox" value={fromType} onChange={e => setFromType(e.target.value)}>
                         <option value="checking">Checking</option>
                         <option value="savings">Savings</option>
                         <option value="other">Other</option>
                     </select>
                 </div>
-
-                <div class="container2">
+                <div className="container2">
                     <label>Recipient's User ID:</label>
                     <input
-                        class="textbox"
+                        className="textbox"
                         value={toUserId}
                         onChange={e => setToUserId(e.target.value)}
                         placeholder="Enter recipient ID"
                     />
                 </div>
-
-                <div class="container2">
+                <div className="container2">
                     <label>Recipient's Account Type:</label>
-                    <select class="textbox" value={toAccountIndex} onChange={e => setToAccountIndex(e.target.value)}>
+                    <select className="textbox" value={toAccountIndex} onChange={e => setToAccountIndex(e.target.value)}>
                         <option value={0}>Checking</option>
                         <option value={1}>Savings</option>
                         <option value={2}>Other</option>
                     </select>
                 </div>
-
-                <div class="container2">
+                <div className="container2">
                     <label>Amount:</label>
                     <input
-                        class="textbox"
+                        className="textbox"
                         type="number"
                         value={amount}
                         onChange={e => setAmount(e.target.value)}
@@ -76,10 +70,8 @@ export default function Transfer() {
                     />
                 </div>
             </div>
-
-            <button class="buttons" onClick={handleTransfer}>Transfer</button>
-            <button class="buttons" onClick={() => navigate('/account')}>Cancel</button>
-
+            <button className="buttons" onClick={handleTransfer}>Transfer</button>
+            <button className="buttons" onClick={() => navigate('/account')}>Cancel</button>
         </div>
     );
 }

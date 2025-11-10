@@ -27,44 +27,39 @@ export default function Exchange() {
         <div>
             <header></header>
             <h1>Deposit / Withdraw</h1>
-
-            <div class="exchangeContainer">
-                <div class="container2">
+            <div className="exchangeContainer">
+                <div className="container2">
                     <label>Account Type:</label>
-                    <select class="textbox" value={accountType} onChange={e => setAccountType(e.target.value)}>
+                    <select className="textbox" value={accountType} onChange={e => setAccountType(e.target.value)}>
                         <option value="checking">Checking</option>
                         <option value="savings">Savings</option>
                         <option value="other">Other</option>
                     </select>
                 </div>
-
-                <div class="container2">
+                <div className="container2">
                     <label>Amount:</label>
                     <input
-                        class="textbox"
+                        className="textbox"
                         type="number"
                         value={amount}
                         onChange={e => setAmount(e.target.value)}
                         placeholder="Enter amount"
                     />
                 </div>
-
-                <div class="container2">
+                <div className="container2">
                     <label>Category:</label>
                     <input
-                        class="textbox"
+                        className="textbox"
                         value={category}
                         onChange={e => setCategory(e.target.value)}
                         placeholder="Enter category"
                     />
                 </div>
-
             </div>
-
             <div>
-                <button class="buttons" onClick={() => handleExchange('deposit')}>Deposit</button>
-                <button class="buttons" onClick={() => handleExchange('withdraw')}>Withdraw</button>
-                <button class="buttons" onClick={() => navigate('/account')}>Cancel</button>
+                <button className="buttons" onClick={() => handleExchange('deposit')}>Deposit</button>
+                <button className="buttons" onClick={() => handleExchange('withdraw')}>Withdraw</button>
+                <button className="buttons" onClick={() => navigate('/account')}>Cancel</button>
             </div>
         </div>
     );

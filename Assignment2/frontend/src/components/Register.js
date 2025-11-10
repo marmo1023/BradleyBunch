@@ -22,32 +22,30 @@ export default function Register() {
         <div>
             <header></header>
             <h1>Register</h1>
-
-            <div class="loginBox">
-                <div div class="container">
+            <div className="loginBox">
+                <div className="container">
                     <label>Username:</label>
                     <input
-                        class="textbox"
+                        className="textbox"
                         placeholder="Username"
                         value={username}
                         onChange={e => setUsername(e.target.value)}
                     />
                 </div>
-                <div div class="container">
+                <div className="container">
                     <label>Password:</label>
                     <input
-                        class="textbox"
+                        className="textbox"
                         type="password"
                         placeholder="Password"
                         value={password}
                         onChange={e => setPassword(e.target.value)}
                     />
                 </div>
-                <div class="container">
-                    <button class="buttons" onClick={handleRegister}>Submit</button>
-                    <button class="buttons" onClick={() => navigate('/login')}>Return to Login</button>
+                <div className="container">
+                    <button className="buttons" onClick={handleRegister}>Submit</button>
+                    <button className="buttons" onClick={() => navigate('/login')}>Return to Login</button>
                 </div>
-
             </div>
         </div>
     );

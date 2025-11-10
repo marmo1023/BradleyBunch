@@ -17,28 +17,22 @@ export default function History() {
     }, []);
 
     const filterByType = (type) => {
-        if (type === 'all') {
-            setFiltered(transactions);
-        } else {
-            setFiltered(transactions.filter(tx => tx.accountType === type));
-        }
+        if (type === 'all') setFiltered(transactions);
+        else setFiltered(transactions.filter(tx => tx.accountType === type));
     };
 
     return (
         <div>
             <header></header>
             <h1>Transaction History</h1>
-
-
-            <div class="filterBySection">
+            <div className="filterBySection">
                 <h3>Filter By:</h3>
-                <button class="buttons" onClick={() => filterByType('savings')}>Savings</button>
-                <button class="buttons" onClick={() => filterByType('checking')}>Checking</button>
-                <button class="buttons" onClick={() => filterByType('other')}>Other</button>
-                <button class="buttons" onClick={() => filterByType('all')}>All</button>
+                <button className="buttons" onClick={() => filterByType('savings')}>Savings</button>
+                <button className="buttons" onClick={() => filterByType('checking')}>Checking</button>
+                <button className="buttons" onClick={() => filterByType('other')}>Other</button>
+                <button className="buttons" onClick={() => filterByType('all')}>All</button>
             </div>
-
-            <table class="historyTable" border="1" cellPadding="5" cellSpacing="0">
+            <table className="historyTable" border="1" cellPadding="5" cellSpacing="0">
                 <thead>
                     <tr>
                         <th>Date</th>
@@ -46,20 +40,6 @@ export default function History() {
                         <th>Type</th>
                         <th>Account</th>
                         <th>Category</th>
-                    </tr>
-                    <tr>
-                        <td>Test</td>
-                        <td>Test</td>
-                        <td>Test</td>
-                        <td>Test</td>
-                        <td>Test</td>
-                    </tr>
-                    <tr>
-                        <td>Test</td>
-                        <td>Test</td>
-                        <td>Test</td>
-                        <td>Test</td>
-                        <td>Test</td>
                     </tr>
                 </thead>
                 <tbody>
@@ -74,9 +54,8 @@ export default function History() {
                     ))}
                 </tbody>
             </table>
-
             <div>
-                <button class="buttons" onClick={() => window.history.back()}>Cancel</button>
+                <button className="buttons" onClick={() => window.history.back()}>Cancel</button>
             </div>
         </div>
     );
