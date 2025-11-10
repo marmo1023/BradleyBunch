@@ -116,3 +116,9 @@ tr {
     margin-right: 15%;
 
 }
+
+.pieChart {
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}

@@ -1,8 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect, useRef } from "react";
+import { Chart } from 'chart.js/auto';
 
 export default function History() {
     const [transactions, setTransactions] = useState([]);
     const [filtered, setFiltered] = useState([]);
+    const [category, setCategory] = useState([]);
+
+    const chartRef = useRef(null);
+    const chartInstanceRef = useRef(null);
 
     useEffect(() => {
         fetch('http://localhost:5000/api/transactions/all', {
@@ -14,6 +19,12 @@ export default function History() {
                 setTransactions(txs);
                 setFiltered(txs);
             });
+
+        return () => {
+            if (chartInstanceRef.current) {
+                chartInstanceRef.current.destroy();
+            }
+        };
     }, []);
 
     const filterByType = (type) => {
@@ -22,6 +33,58 @@ export default function History() {
         } else {
             setFiltered(transactions.filter(tx => tx.accountType === type));
         }
+    };
+
+
+    // const categoryArray = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+    const dataSet = [12, 19, 3, 5, 2, 3];
+
+    const createChart = () => {
+        // get categories for the chart
+        fetch('http://localhost:5000/api/categories', {
+            credentials: 'include'
+        })
+            .then(res => res.json())
+            .then(data => {
+                const cat = data.data || [];
+                setCategory(cat);
+            })
+
+        // code for the chart below:
+        if (!chartRef.current) return;
+
+        // Destroy existing chart if it exists
+        if (chartInstanceRef.current) {
+            chartInstanceRef.current.destroy();
+        }
+
+        const ctx = chartRef.current.getContext('2d');
+
+        chartInstanceRef.current = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: category,
+                datasets: [{
+                    label: 'My Data',
+                    data: dataSet,
+                    borderColor: 'rgb(66, 104, 69)',
+                    backgroundColor: 'rgba(66, 104, 69, 0.2)',
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                onClick: (event, activeElements) => {
+                    if (activeElements.length > 0) {
+                        const index = activeElements[0].index;
+                        const value = dataSet[index];
+                        console.log('Clicked:', value);
+                    }
+                },
+                responsive: true,
+                maintainAspectRatio: true
+            }
+        });
     };
 
     return (
@@ -77,6 +140,15 @@ export default function History() {
 
             <div>
                 <button class="buttons" onClick={() => window.history.back()}>Cancel</button>
+            </div>
+
+            <div>
+                <button onClick={createChart}>
+                    Show Pie Chart
+                </button>
+                <div class="pieChart">
+                    <canvas ref={chartRef}></canvas>
+                </div>
             </div>
         </div>
     );
