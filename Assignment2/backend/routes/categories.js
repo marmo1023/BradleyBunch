@@ -6,7 +6,7 @@ module.exports = (dbInstance) => {
     const users = dbInstance.getDb().collection('users');
 
     // Get categories for the logged-in user
-    router.get('/categories', async (req, res) => {
+    router.get('/', async (req, res) => {
         try {
             //Check if user is logged in
             if (!req.session.username) return res.status(401).json({ error: 'Not logged in' });

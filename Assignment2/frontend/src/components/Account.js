@@ -8,6 +8,12 @@ export default function Account() {
 
   const [accounts, setAccounts] = useState([]);
 
+  // Helper to get label of selected account
+  const getSelectedLabel = () => {
+  const acc = accounts.find(a => a.type === selectedType);
+  return acc?.label || selectedType;
+};
+
   useEffect(() => {
     fetch('http://localhost:5000/api/accounts', {
       credentials: 'include'
@@ -21,7 +27,8 @@ export default function Account() {
       })
       .then(data => setAccounts(data.accounts || []))
       .catch(err => {
-        console.error('Error fetching accounts:', err.message);      });
+        console.error('Error fetching accounts:', err.message);
+      });
   }, [selectedType, navigate]);
 
   const handleLogout = async () => {
@@ -40,8 +47,9 @@ export default function Account() {
     <div>
       <header></header>
       <div className="accountActionHeader">
-        <h1>Selected Account:</h1>
-        <h2>Current Balance: ${totalBalance.toFixed(2)}</h2>
+        <h1>Selected Account: {getSelectedLabel() || 'None'}</h1>
+        <h2>Current Balance: ${totalBalance.toLocaleString(undefined, 
+          { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h2>
       </div>
       {accounts.map((acc, i) => (
         <div
@@ -53,11 +61,13 @@ export default function Account() {
             backgroundColor: acc.type === selectedType ? '#e0f7fa' : '#fff'
           }}
         >
-          <strong>{acc.label}</strong> ({acc.type}) — ${acc.balance.toFixed(2)}
+          <strong>{acc.label}</strong> ({acc.type}) — ${acc.balance.toLocaleString(undefined, 
+            { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </div>
       ))}
       <h3>Choose an action:</h3>
       <div className="accountActions">
+        <button className="buttons" onClick={() => navigate('/select')}>Back</button>
         <button className="buttons" onClick={() => navigate('/exchange')}>Deposit/Withdraw</button>
         <button className="buttons" onClick={() => navigate('/history')}>History</button>
         <button className="buttons" onClick={() => navigate('/transfer')}>Transfer</button>

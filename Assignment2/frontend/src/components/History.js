@@ -4,8 +4,7 @@ import { Chart } from 'chart.js/auto';
 export default function History() {
     const [transactions, setTransactions] = useState([]);
     const [filtered, setFiltered] = useState([]);
-    const [category, setCategory] = useState([]);
-    const [dataSet, setDataSet] = useState([]);
+    const [showChart, setShowChart] = useState(false);
 
     const chartRef = useRef(null);
     const chartInstanceRef = useRef(null);
@@ -31,67 +30,59 @@ export default function History() {
     const filterByType = (type) => {
         if (type === 'all') setFiltered(transactions);
         else setFiltered(transactions.filter(tx => tx.accountType === type));
+        setShowChart(false);
     };
 
-
-    const createChart = () => {
-        // get the totals for the dataset
-        fetch('http://localhost:5000/api/transactions/summary/categories', {
-            credentials: 'include'
-        })
-            .then(res => res.json())
-            .then(data => {
-                const cat = data.data;
-                setDataSet(cat);
-                console.log("array for DATA SET is: " + cat);
-            })
-
-        // get the names of the categories
-        fetch('http://localhost:5000/api/categories/', {
-            credentials: 'include'
-        })
-            .then(res => res.json())
-            .then(data => {
-                const names = data.data;
-                setDataSet(names);
-                console.log("array for NAMES is: " + names);
-            })
-
-        // code for the chart below:
+    const createChart = async () => {
         if (!chartRef.current) return;
 
-        // Destroy existing chart if it exists
-        if (chartInstanceRef.current) {
-            chartInstanceRef.current.destroy();
-        }
+        // Destroy previous chart instance if it exists
+        if (chartInstanceRef.current) chartInstanceRef.current.destroy();
 
-        const ctx = chartRef.current.getContext('2d');
+        try {
+            const totalsRes = await fetch('http://localhost:5000/api/transactions/summary/categories', { credentials: 'include' });
 
-        chartInstanceRef.current = new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels: category,
-                datasets: [{
-                    label: 'My Data',
-                    data: dataSet,
-                    borderColor: 'rgb(66, 104, 69)',
-                    backgroundColor: 'rgba(66, 104, 69, 0.2)',
-                    tension: 0.3,
-                    fill: true
-                }]
-            },
-            options: {
-                onClick: (event, activeElements) => {
-                    if (activeElements.length > 0) {
-                        const index = activeElements[0].index;
-                        const value = dataSet[index];
-                        console.log('Clicked:', value);
-                    }
-                },
-                responsive: true,
-                maintainAspectRatio: true
+            if (!totalsRes.ok) {
+                const text = await totalsRes.text();
+                throw new Error(`Totals fetch failed: ${text}`);
             }
-        });
+
+            const summary = {};
+            filtered.forEach(tx => {
+                if (!summary[tx.category]) summary[tx.category] = 0;
+                summary[tx.category] += tx.amount;
+            });
+
+            const labels = Object.keys(summary);
+            const values = Object.values(summary);
+
+            const ctx = chartRef.current.getContext('2d');
+
+            chartInstanceRef.current = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Total by Category',
+                        data: values,
+                        backgroundColor: [
+                            '#4CAF50', '#2196F3', '#FFC107', '#FF5722', '#9C27B0', '#00BCD4'
+                        ],
+                        borderColor: '#fff',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true, plugins: { legend: { position: 'right' } },
+                    onClick: (event, activeElements) => {
+                        if (activeElements.length > 0) {
+                            const index = activeElements[0].index;
+                            console.log('Clicked category:', labels[index], 'Total:', values[index]);
+                        }
+                    }
+                }
+            });
+        } catch (err) { console.error('Chart creation error:', err); }
     };
 
     return (
@@ -129,15 +120,15 @@ export default function History() {
             </table>
             <div>
                 <button className="buttons" onClick={() => window.history.back()}>Cancel</button>
-            </div>
-
-            <div>
-                <button onClick={createChart}>
-                    Show Pie Chart
-                </button>
-                <div class="pieChart">
-                    <canvas ref={chartRef}></canvas>
-                </div>
+                <button className="buttons" onClick={() => {
+                    setShowChart(true)
+                    createChart();
+                }}>Show Pie Chart</button>
+                {showChart && (
+                    <div className="pieChart">
+                        <canvas ref={chartRef}></canvas>
+                    </div>
+                )}
             </div>
         </div>
     );

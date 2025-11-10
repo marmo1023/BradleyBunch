@@ -21,6 +21,23 @@ module.exports = (dbInstance) => {
         return { userAccount, index };
     }
 
+    //Get Accounts
+    router.get('/', async (req, res) => {
+        try {
+            if (!req.session.username) return res.status(401).json({ error: 'Not logged in' });
+
+            const userId = await getUserId(req.session.username);
+            const doc = await accounts.findOne({ userId });
+
+            if (!doc) return res.status(404).json({ error: 'Accounts not found' });
+
+            res.json({ success: true, accounts: doc.accounts });
+        } catch (err) {
+            console.error('Error fetching accounts:', err);
+            res.status(500).json({ error: 'Server error' });
+        }
+    });
+
     //Deposit
     router.post('/deposit', async (req, res) => {
         try {
@@ -119,25 +136,26 @@ module.exports = (dbInstance) => {
         const { accountType, newLabel } = req.body;
         const username = req.session.username;
 
+        //Null checks
         if (!username) return res.status(401).json({ error: 'Not logged in' });
         if (accountType !== 'other') return res.status(400).json({ error: 'Only "other" account can be renamed' });
 
         try {
             const userId = await getUserId(username);
+
+            //Update account label
             const result = await accounts.updateOne(
                 { userId, 'accounts.type': 'other' },
                 { $set: { 'accounts.$.label': newLabel } }
             );
 
+            //Return result
             if (result.modifiedCount === 1) {
                 res.json({ success: true });
             } else {
                 res.status(400).json({ error: 'Rename failed' });
             }
-        } catch (err) {
-            console.error('Rename error:', err);
-            res.status(500).json({ error: 'Server error' });
-        }
+        } catch (err) { res.status(500).json({ error: 'Server error' }); }
     });
     return router;
 };

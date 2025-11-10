@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 export default function Exchange() {
     const [accountType, setAccountType] = useState('checking');
     const [amount, setAmount] = useState('');
     const [category, setCategory] = useState('');
-    const navigate = useNavigate();
 
     const handleExchange = async (type) => {
         const res = await fetch(`http://localhost:5000/api/accounts/${type}`, {
@@ -19,7 +17,7 @@ export default function Exchange() {
             })
         });
         const data = await res.json();
-        if (data.success) navigate('/account');
+        if (data.success) window.history.back();
         else alert(data.error);
     };
 
@@ -59,7 +57,7 @@ export default function Exchange() {
             <div>
                 <button className="buttons" onClick={() => handleExchange('deposit')}>Deposit</button>
                 <button className="buttons" onClick={() => handleExchange('withdraw')}>Withdraw</button>
-                <button className="buttons" onClick={() => navigate('/account')}>Cancel</button>
+                <button className="buttons" onClick={() => window.history.back()}>Cancel</button>
             </div>
         </div>
     );

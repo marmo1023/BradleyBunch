@@ -71,7 +71,7 @@ export default function Transfer() {
                 </div>
             </div>
             <button className="buttons" onClick={handleTransfer}>Transfer</button>
-            <button className="buttons" onClick={() => navigate('/account')}>Cancel</button>
+            <button className="buttons" onClick={() => window.history.back()}>Cancel</button>
         </div>
     );
 }
