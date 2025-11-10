@@ -10,9 +10,14 @@ const dbo = require('./conn.js');
 const app = express();
 const port = process.env.PORT || 5000;
 
+// Middleware
 app.use(express.json());
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+app.use(cors({ 
+  origin: 'http://localhost:3000', 
+  credentials: true
+}));
 
+// Session setup
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
@@ -25,6 +30,7 @@ app.use(session({
   cookie: { maxAge: 1000 * 60 * 60 * 24 }
 }));
 
+// Connect to DB and register routes
 dbo.connectToServer((err) => {
   if (err) {
     console.error('DB connection error:', err);
@@ -38,7 +44,5 @@ dbo.connectToServer((err) => {
   app.use('/api/transactions', require('./routes/transactions.js')(dbo));
   app.use('/api/categories', require('./routes/categories.js')(dbo)); // added
 
-  app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
-  });
+  app.listen(port, () => { console.log(`Server running on http://localhost:${port}`); });
 });

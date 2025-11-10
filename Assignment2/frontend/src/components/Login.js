@@ -22,30 +22,29 @@ export default function Login() {
         <div>
             <header></header>
             <h1>Login</h1>
-            <div class="loginBox">
-                <div class="container">
+            <div className="loginBox">
+                <div className="container">
                     <label>Username:</label>
                     <input
-                        class="textbox"
+                        className="textbox"
                         placeholder="Username"
                         value={username}
                         onChange={e => setUsername(e.target.value)}
                     />
                 </div>
-                <div class="container">
+                <div className="container">
                     <label>Password:</label>
                     <input
-                        class="textbox"
+                        className="textbox"
                         type="password"
                         placeholder="Password"
                         value={password}
                         onChange={e => setPassword(e.target.value)}
                     />
                 </div>
-
-                <div class="container">
-                    <button class="buttons" onClick={handleLogin}>Login</button>
-                    <button class="buttons" onClick={() => navigate('/register')}>Register</button>
+                <div className="container">
+                    <button className="buttons" onClick={handleLogin}>Login</button>
+                    <button className="buttons" onClick={() => navigate('/register')}>Register</button>
                 </div>
             </div>
         </div>

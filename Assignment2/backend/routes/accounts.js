@@ -7,90 +7,111 @@ module.exports = (dbInstance) => {
     const categories = dbInstance.getDb().collection('categories');
     const users = dbInstance.getDb().collection('users');
 
-    async function getUserId(username) {
-        const user = await users.findOne({ username });
-        return user?._id;
+    //Helpers functions: getUserId, getAccount
+    async function getUserId(username) { return (await users.findOne({ username }))?._id; }
+
+    async function getAccount(userId, type) {
+        //Finds user
+        const userAccount = await accounts.findOne({ userId });
+        if (!userAccount) return null;
+
+        //Finds account of user
+        const index = userAccount.accounts.findIndex(acc => acc.type === type);
+        if (index === -1) return null;
+        return { userAccount, index };
     }
 
-    // Deposit into account
+    //Deposit
     router.post('/deposit', async (req, res) => {
-        const { accountType, amount, category } = req.body;
-        if (!req.session.username) return res.status(401).json({ error: 'Not logged in' });
-        if (!accountType || !amount || !category) return res.status(400).json({ error: 'Missing fields' });
+        try {
+            const { accountType, amount, category } = req.body;
 
-        const parsedAmount = parseFloat(amount);
-        if (isNaN(parsedAmount) || parsedAmount <= 0) {
-            return res.status(400).json({ error: 'Invalid amount' });
-        }
+            //Null checks
+            if (!req.session.username) return res.status(401).json({ error: 'Not logged in' });
+            if (!accountType || !amount || !category) return res.status(400).json({ error: 'Missing fields' });
 
-        const userId = await getUserId(req.session.username);
-        const userAccount = await accounts.findOne({ userId });
-        if (!userAccount) return res.status(404).json({ error: 'Account not found' });
+            //Parse and validate amount
+            const parsedAmount = parseFloat(amount);
+            if (isNaN(parsedAmount) || parsedAmount <= 0) return res.status(400).json({ error: 'Invalid amount' });
 
-        const index = userAccount.accounts.findIndex(acc => acc.type === accountType);
-        if (index === -1) return res.status(400).json({ error: 'Invalid account type' });
+            //Get user ID and account
+            const userId = await getUserId(req.session.username);
+            const result = await getAccount(userId, accountType);
+            if (!result) return res.status(400).json({ error: 'Invalid account type or user account not found' });
 
-        userAccount.accounts[index].balance += parsedAmount;
-        await accounts.updateOne({ userId }, { $set: { accounts: userAccount.accounts } });
+            //Update account balance
+            const { userAccount, index } = result;
+            userAccount.accounts[index].balance += parsedAmount;
+            await accounts.updateOne({ userId }, { $set: { accounts: userAccount.accounts } });
 
-        await transactions.insertOne({
-            userId,
-            accountType,
-            type: 'deposit',
-            amount: parsedAmount,
-            category,
-            timestamp: new Date()
-        });
+            //Insert transaction record
+            await transactions.insertOne({
+                userId,
+                accountType,
+                type: 'deposit',
+                amount: parsedAmount,
+                category,
+                timestamp: new Date()
+            });
 
-        await categories.updateOne(
-            { userId },
-            { $addToSet: { categories: category } },
-            { upsert: true }
-        );
+            //Add category
+            await categories.updateOne(
+                { userId },
+                { $addToSet: { categories: category } },
+                { upsert: true }
+            );
 
-        res.json({ success: true, balance: userAccount.accounts[index].balance });
+            //Return balance
+            res.json({ success: true, balance: userAccount.accounts[index].balance });
+        } catch (err) { res.status(500).json({ error: 'Deposit failed' }); }
     });
 
-    // Withdraw from account
+    //Withdraw
     router.post('/withdraw', async (req, res) => {
-        const { accountType, amount, category } = req.body;
-        if (!req.session.username) return res.status(401).json({ error: 'Not logged in' });
-        if (!accountType || !amount || !category) return res.status(400).json({ error: 'Missing fields' });
+        try {
+            const { accountType, amount, category } = req.body;
 
-        const parsedAmount = parseFloat(amount);
-        if (isNaN(parsedAmount) || parsedAmount <= 0) {
-            return res.status(400).json({ error: 'Invalid amount' });
-        }
+            //Null checks
+            if (!req.session.username) return res.status(401).json({ error: 'Not logged in' });
+            if (!accountType || !amount || !category) return res.status(400).json({ error: 'Missing fields' });
 
-        const userId = await getUserId(req.session.username);
-        const userAccount = await accounts.findOne({ userId });
-        if (!userAccount) return res.status(404).json({ error: 'Account not found' });
+            //Parse and validate amount
+            const parsedAmount = parseFloat(amount);
+            if (isNaN(parsedAmount) || parsedAmount <= 0) return res.status(400).json({ error: 'Invalid amount' });
 
-        const index = userAccount.accounts.findIndex(acc => acc.type === accountType);
-        if (index === -1) return res.status(400).json({ error: 'Invalid account type' });
+            //Get user ID and account
+            const userId = await getUserId(req.session.username);
+            const result = await getAccount(userId, accountType);
+            if (!result) return res.status(400).json({ error: 'Invalid UserID or Account Type' });
 
-        if (userAccount.accounts[index].balance < parsedAmount) {
-            return res.status(400).json({ error: 'Insufficient funds' });
-        }
+            //Check balance
+            const { userAccount, index } = result;
+            if (userAccount.accounts[index].balance < parsedAmount) return res.status(400).json({ error: 'Insufficient funds' });
 
-        userAccount.accounts[index].balance -= parsedAmount;
-        await accounts.updateOne({ userId }, { $set: { accounts: userAccount.accounts } });
+            //Update account balance
+            userAccount.accounts[index].balance -= parsedAmount;
+            await accounts.updateOne({ userId }, { $set: { accounts: userAccount.accounts } });
 
-        await transactions.insertOne({
-            userId,
-            accountType,
-            type: 'withdraw',
-            amount: parsedAmount,
-            category,
-            timestamp: new Date()
-        });
+            //Insert transaction record
+            await transactions.insertOne({
+                userId,
+                accountType,
+                type: 'withdraw',
+                amount: parsedAmount,
+                category,
+                timestamp: new Date()
+            });
 
-        await categories.updateOne(
-            { userId },
-            { $addToSet: { categories: category } },
-            { upsert: true }
-        );
-        res.json({ success: true, balance: userAccount.accounts[index].balance });
+            //Add category
+            await categories.updateOne(
+                { userId },
+                { $addToSet: { categories: category } },
+                { upsert: true }
+            );
+
+            //Return balance
+            res.json({ success: true, balance: userAccount.accounts[index].balance });
+        } catch (err) { res.status(500).json({ error: 'Withdraw failed' }); }
     });
     return router;
 };

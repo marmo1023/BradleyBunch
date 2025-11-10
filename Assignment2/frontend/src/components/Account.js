@@ -12,9 +12,17 @@ export default function Account() {
     fetch('http://localhost:5000/api/accounts', {
       credentials: 'include'
     })
-      .then(res => res.json())
-      .then(data => setAccounts(data.accounts || []));
-  }, []);
+      .then(async res => {
+        if (!res.ok) {
+          const text = await res.text();
+          throw new Error(`Fetch failed: ${text}`);
+        }
+        return res.json();
+      })
+      .then(data => setAccounts(data.accounts || []))
+      .catch(err => {
+        console.error('Error fetching accounts:', err.message);      });
+  }, [selectedType, navigate]);
 
   const handleLogout = async () => {
     const res = await fetch('http://localhost:5000/api/auth/logout', {
@@ -31,12 +39,10 @@ export default function Account() {
   return (
     <div>
       <header></header>
-      <div class="accountActionHeader">
+      <div className="accountActionHeader">
         <h1>Selected Account:</h1>
         <h2>Current Balance: ${totalBalance.toFixed(2)}</h2>
-
       </div>
-
       {accounts.map((acc, i) => (
         <div
           key={i}
@@ -51,11 +57,11 @@ export default function Account() {
         </div>
       ))}
       <h3>Choose an action:</h3>
-      <div class="accountActions">
-        <button class="buttons" onClick={() => navigate('/exchange')}>Deposit/Withdraw</button>
-        <button class="buttons" onClick={() => navigate('/history')}>History</button>
-        <button class="buttons" onClick={() => navigate('/transfer')}>Transfer</button>
-        <button class="buttons" onClick={handleLogout}>Logout</button>
+      <div className="accountActions">
+        <button className="buttons" onClick={() => navigate('/exchange')}>Deposit/Withdraw</button>
+        <button className="buttons" onClick={() => navigate('/history')}>History</button>
+        <button className="buttons" onClick={() => navigate('/transfer')}>Transfer</button>
+        <button className="buttons" onClick={handleLogout}>Logout</button>
       </div>
     </div>
   );
