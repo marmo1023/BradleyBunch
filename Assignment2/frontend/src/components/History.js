@@ -5,6 +5,7 @@ export default function History() {
     const [transactions, setTransactions] = useState([]);
     const [filtered, setFiltered] = useState([]);
     const [category, setCategory] = useState([]);
+    const [dataSet, setDataSet] = useState([]);
 
     const chartRef = useRef(null);
     const chartInstanceRef = useRef(null);
@@ -33,18 +34,27 @@ export default function History() {
     };
 
 
-    // const categoryArray = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-    const dataSet = [12, 19, 3, 5, 2, 3];
-
     const createChart = () => {
-        // get categories for the chart
-        fetch('http://localhost:5000/api/categories', {
+        // get the totals for the dataset
+        fetch('http://localhost:5000/api/transactions/summary/categories', {
             credentials: 'include'
         })
             .then(res => res.json())
             .then(data => {
-                const cat = data.data || [];
-                setCategory(cat);
+                const cat = data.data;
+                setDataSet(cat);
+                console.log("array for DATA SET is: " + cat);
+            })
+
+        // get the names of the categories
+        fetch('http://localhost:5000/api/categories/', {
+            credentials: 'include'
+        })
+            .then(res => res.json())
+            .then(data => {
+                const names = data.data;
+                setDataSet(names);
+                console.log("array for NAMES is: " + names);
             })
 
         // code for the chart below:
