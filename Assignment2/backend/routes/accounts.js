@@ -113,5 +113,31 @@ module.exports = (dbInstance) => {
             res.json({ success: true, balance: userAccount.accounts[index].balance });
         } catch (err) { res.status(500).json({ error: 'Withdraw failed' }); }
     });
+
+    //Rename 'other' account
+    router.post('/rename', async (req, res) => {
+        const { accountType, newLabel } = req.body;
+        const username = req.session.username;
+
+        if (!username) return res.status(401).json({ error: 'Not logged in' });
+        if (accountType !== 'other') return res.status(400).json({ error: 'Only "other" account can be renamed' });
+
+        try {
+            const userId = await getUserId(username);
+            const result = await accounts.updateOne(
+                { userId, 'accounts.type': 'other' },
+                { $set: { 'accounts.$.label': newLabel } }
+            );
+
+            if (result.modifiedCount === 1) {
+                res.json({ success: true });
+            } else {
+                res.status(400).json({ error: 'Rename failed' });
+            }
+        } catch (err) {
+            console.error('Rename error:', err);
+            res.status(500).json({ error: 'Server error' });
+        }
+    });
     return router;
 };
