@@ -1,0 +1,124 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    text-align: center;
+    margin: 0 auto;
+}
+
+.container {
+    padding: 10px;
+    font-size: 25px;
+}
+
+.textbox {
+    margin: 10px;
+    font-size: 15px;
+    height: 20px;
+}
+
+.buttons {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin: 10px;
+    font-size: 15px;
+}
+
+header {
+    height: 100px;
+    width: 100%;
+    background-color: rgb(17, 31, 18);
+}
+
+.accountContainer {
+    padding-top: 20px;
+    margin-left: 10%;
+    margin-right: 10%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.accountBox {
+    padding: 20px;
+    padding-bottom: 100px;
+    padding-left: 50px;
+    padding-right: 50px;
+    border: 1px solid black;
+    border-radius: 20px;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+}
+
+.accountBox:hover {
+    background-color: rgb(201, 201, 201);
+}
+
+.accountActionHeader {
+    margin-right: 50%;
+    padding-bottom: 50px;
+}
+
+.accountActions {
+    margin-left: 15%;
+    margin-right: 15%;
+    margin-top: 50px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.exchangeContainer {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.container2 {
+    padding-bottom: 20px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+
+tr:nth-child(even) {
+    background-color: #bddac8;
+}
+
+th,
+td,
+tr {
+    border: none;
+    margin: 0;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+
+.historyTable {
+    margin: 0 auto;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    border-collapse: collapse;
+    border-spacing: 10px 0;
+    border: none;
+    width: 75%;
+}
+
+.filterBySection {
+    display: flex;
+    justify-content: left;
+    margin-left: 15%;
+    margin-right: 15%;
+
+}
+
+.pieChart {
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
