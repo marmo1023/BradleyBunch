@@ -4,7 +4,7 @@ const uri = process.env.ATLAS_URI;
 let _db;
 
 // Connect to MongoDB
-const connectToServer = (callback) => {
+const connectToServer = async (callback) => {
   const client = new MongoClient(uri, {
     serverApi: {
       version: ServerApiVersion.v1,
@@ -17,8 +17,8 @@ const connectToServer = (callback) => {
     try {
       await client.connect();
       await client.db('admin').command({ ping: 1 });
-      _db = client.db('banking');
-      console.log('Connected to Banking Database');
+      _db = client.db('hangman');
+      console.log('Connected to Hangman Database');
       if (callback) callback();
     } catch (err) {
       console.error('Connection failed:', err);
