@@ -2,14 +2,25 @@ import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { SocketContext } from '../socket';
 
+import hangman0 from './images/hangman-0.svg';
+import hangman1 from './images/hangman-1.svg';
+import hangman2 from './images/hangman-2.svg';
+import hangman3 from './images/hangman-3.svg';
+import hangman4 from './images/hangman-4.svg';
+import hangman5 from './images/hangman-5.svg';
+import hangman6 from './images/hangman-6.svg';
+
 export default function Hangman() {
   const navigate = useNavigate();
   const location = useLocation();
   const [masked, setMasked] = useState(location.state?.masked || '');
   const [guesses, setGuesses] = useState([]);
+  const [wrongGuesses, setWrongGuesses] = useState(0); // use this to keep track of how many incorrect guesses there have been
   const socket = useContext(SocketContext);
 
   const { gameId, masked: initialMasked, myName } = location.state || {};
+
+  const hangmanImages = [hangman0, hangman1, hangman2, hangman3, hangman4, hangman5, hangman6];
 
   const makeGuess = async (letter) => {
     try {
@@ -20,6 +31,7 @@ export default function Hangman() {
         body: JSON.stringify({ gameId, letter, playerName: myName })
       });
       if (!res.ok) throw new Error('Failed to submit guess');
+
     } catch (err) { console.error(err); }
   };
 
@@ -33,6 +45,11 @@ export default function Hangman() {
       if (data.gameId !== gameId) return;
       setMasked(data.masked);
       setGuesses(data.guesses);
+
+      // we want to update the hangman image on an incorrect guess, so i'll implement it in the onGameUpdate
+      if (data.wrongGuesses !== undefined) {
+        setWrongGuesses(data.wrongGuesses);
+      }
     };
 
     const onRoundEnded = (data) => {
@@ -51,14 +68,24 @@ export default function Hangman() {
 
   return (
     <div>
-      <h2>Guess the word</h2>
-      <p>{masked}</p>
-      <div>
-        {'abcdefghijklmnopqrstuvwxyz'.split('').map(l => (
-          <button key={l} onClick={() => makeGuess(l)} disabled={guesses.includes(l)}>
-            {l}
-          </button>
-        ))}
+      <header></header>
+      <h1>Guess The Word!</h1>
+      <div className="gameContainer">
+
+        <div className="keyboardContainer">
+
+          <p className="wordToGuess">{masked}</p>
+          <div className="keyboard">
+            {'abcdefghijklmnopqrstuvwxyz'.split('').map(l => (
+              <button key={l} onClick={() => makeGuess(l)} disabled={guesses.includes(l)}>
+                {l}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div>
+          <img className="hangmanImage" src={hangmanImages[wrongGuesses]} alt="hangman-img" height="auto" width="auto" />
+        </div>
       </div>
     </div>
   );

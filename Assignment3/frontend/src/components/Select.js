@@ -28,11 +28,13 @@ export default function Select() {
     useEffect(() => {
         const onWordSelected = (data) => {
             if (data.gameId !== gameId) return;
-            navigate('/game', { state: { 
-                gameId: data.gameId, 
-                masked: data.masked,
-                myName
-            } });
+            navigate('/game', {
+                state: {
+                    gameId: data.gameId,
+                    masked: data.masked,
+                    myName
+                }
+            });
         };
         socket.on('wordSelected', onWordSelected);
         return () => socket.off('wordSelected', onWordSelected);
@@ -41,16 +43,20 @@ export default function Select() {
     if (myName === wordSetter) {
         return (
             <div>
-                <h2>Please enter a word:</h2>
-                <input value={phrase} onChange={e => setPhrase(e.target.value)} />
-                <button onClick={submitWord} disabled={!phrase.trim()}>Submit</button>
+                <headeR></headeR>
+                <h1>Please enter a word:</h1>
+                <div className="textBoxContainer">
+                    <input className="textBox" value={phrase} onChange={e => setPhrase(e.target.value)} />
+                    <button onClick={submitWord} disabled={!phrase.trim()}>Submit</button>
+                </div>
             </div>
         );
     }
 
     return (
         <div>
-            <h2>Waiting for {wordSetter} to choose a word...</h2>
+            <header></header>
+            <h1 className="loading">Waiting for {wordSetter} to choose a word</h1>
         </div>
     );
 }

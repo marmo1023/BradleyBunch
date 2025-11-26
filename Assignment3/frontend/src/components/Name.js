@@ -46,10 +46,13 @@ export default function Name() {
     }, [socket, navigate, name]);
 
     return (
-        <div>
-            <h2>Enter your name</h2>
-            <input value={name} onChange={e => setName(e.target.value)} />
-            <button onClick={handleSubmit} disabled={!name.trim()}>Join</button>
+        <div className="mainContainer">
+            <header></header>
+            <h1>Enter your name</h1>
+            <div className="textBoxContainer">
+                <input className="textBox" value={name} onChange={e => setName(e.target.value)} />
+                <button onClick={handleSubmit} disabled={!name.trim()}>Join</button>
+            </div>
         </div>
     );
 }

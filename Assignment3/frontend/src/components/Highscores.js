@@ -36,6 +36,7 @@ export default function Highscores() {
   };
   return (
     <div>
+      <header></header>
       <h2>High Scores</h2>
       <table className="scoresTable" border="1" cellPadding="5" cellSpacing="0">
         <thead>
@@ -44,6 +45,8 @@ export default function Highscores() {
             <th>Phrase</th>
             <th>Guesses</th>
             <th>Success</th>
+            <th>Phrase Type</th>
+            <th>Category</th>
             <th>Date</th>
           </tr>
         </thead>
