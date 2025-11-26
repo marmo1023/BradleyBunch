@@ -7,6 +7,7 @@ export default function Name() {
     const [name, setName] = useState('');
     const socket = useContext(SocketContext);
 
+    //On-Click Event: register player with backend
     const handleSubmit = async () => {
         try {
             const res = await fetch('http://localhost:5000/api/players/register', {
@@ -15,42 +16,41 @@ export default function Name() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name })
             });
-            const data = await res.json();
-            if (!res.ok || !data.success) {
-                alert(data.error || 'Failed to register');
-            }
-        } catch (err) { console.error(err); }
+            if (!res.ok) throw new Error('Failed to register player');
+        } catch (err) { alert(err.message); }
     };
 
     useEffect(() => {
-        socket.on('playersReady', (data) => {
-            //console.log('playersReady received:', data); 
-        });
+        //Join room and navigate to select page
         socket.on('gameStarted', (data) => {
-            //console.log('gameStarted received: ', data);
+            socket.emit('joinGame', { gameId: data.gameId });
             navigate('/select', {
                 state: {
                     gameId: data.gameId,
-                    player1: data.player1,
-                    player2: data.player2,
                     wordSetter: data.wordSetter,
                     myName: name
                 }
             });
         });
 
+        //Cleanup listener
         return () => {
-            socket.off('playersReady');
             socket.off('gameStarted');
         };
     }, [socket, navigate, name]);
 
+    //UI Render
     return (
         <div className="mainContainer">
             <header></header>
             <h1>Enter your name</h1>
             <div className="textBoxContainer">
-                <input className="textBox" value={name} onChange={e => setName(e.target.value)} />
+                <input
+                    className="textBox"
+                    value={name}
+                    onChange={e => setName(e.target.value)}
+                    placeholder="Your name"
+                />
                 <button onClick={handleSubmit} disabled={!name.trim()}>Join</button>
             </div>
         </div>

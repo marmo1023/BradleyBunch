@@ -11,6 +11,8 @@ const dbo = require('./conn.js');
 const app = express();
 const port = process.env.PORT || 5000;
 const server = http.createServer(app);
+
+//Create new Socket.IO server
 const io = new Server(server, {
   cors: {
     origin: 'http://localhost:3000',
@@ -18,14 +20,14 @@ const io = new Server(server, {
   }
 });
 
-// Middleware
+//Middleware
 app.use(express.json());
 app.use(cors({
   origin: 'http://localhost:3000',
   credentials: true
 }));
 
-// Session setup
+// Session
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
@@ -35,10 +37,14 @@ app.use(session({
     dbName: 'hangman',
     collectionName: 'sessions'
   }),
-  cookie: { maxAge: 1000 * 60 * 60 * 24 }
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 24,
+    httpOnly: true,
+    sameSite: 'lax'
+  }
 }));
 
-//Connect to DB
+// Connect to DB
 dbo.connectToServer(async (err) => {
   if (err) {
     console.error('DB connection error:', err);
@@ -46,19 +52,29 @@ dbo.connectToServer(async (err) => {
   }
   console.log('MongoDB connected. Registering routes...');
 
-  // Routes
+  //Routes
   app.use('/api/players', require('./routes/players.js')(dbo, io));
   app.use('/api/games', require('./routes/games.js')(dbo, io));
   app.use('/api/scores', require('./routes/scores.js')(dbo));
 
-  // Socket.io setup
+  //Socket.IO
   io.on('connection', (socket) => {
     console.log('New client connected:', socket.id);
+
+    //Add player to game room
+    socket.on('joinGame', ({ gameId }) => {
+      if (!gameId) return;
+      const room = `game:${gameId}`;
+      socket.join(room);
+      io.to(room).emit('playerJoined', { socketId: socket.id, gameId });
+    });
+
+    //Handle disconnect
     socket.on('disconnect', () => {
       console.log('Client disconnected:', socket.id);
     });
   });
 
-  // Start server
+  //Start server
   server.listen(port, () => { console.log(`Server running on http://localhost:${port}`); });
 });

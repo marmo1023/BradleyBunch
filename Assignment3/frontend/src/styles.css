@@ -127,3 +127,13 @@ tr {
     border: none;
     width: 75%;
 }
+
+.correctGuess {
+  background-color: rgb(31, 93, 31);
+  color: white;
+}
+
+.wrongGuess {
+  background-color: rgb(232, 80, 80);
+  color: white;
+}
