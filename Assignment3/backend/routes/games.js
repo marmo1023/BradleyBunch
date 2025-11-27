@@ -168,12 +168,12 @@ router.post('/word', async (req, res) => {
         };
         await scores.insertOne(scoreDoc);
 
-        //Notify players round ended
-        io.to(getRoom(gameId)).emit('roundEnded', { gameId, score: scoreDoc });
-
         //Switch wordSetter
         const nextWordSetter = game.wordSetter === game.player1 ? game.player2 : game.player1;
         const nextRound = (game.roundNumber || 1) + 1;
+
+        //Notify players round ended
+        io.to(getRoom(gameId)).emit('roundEnded', { gameId, score: scoreDoc, nextWordSetter });
 
         //Update game
         await games.updateOne(
@@ -192,12 +192,8 @@ router.post('/word', async (req, res) => {
             }
           }
         );
-        //Notify players of next round or game completion
-        if (nextRound > 2) {
-          io.to(getRoom(gameId)).emit('gameCompleted', { gameId });
-        } else {
-          io.to(getRoom(gameId)).emit('nextRound', { gameId, nextWordSetter, roundNumber: nextRound });
-        }
+        //Notify players of next round
+        io.to(getRoom(gameId)).emit('nextRound', { gameId, nextWordSetter, roundNumber: nextRound });
       }
       res.json({ success: true, masked, guesses, success, wrongGuesses, maxWrong: game.maxWrong || 6 });
     } catch (err) { res.status(500).json({ error: 'Failed to process guess' }); }

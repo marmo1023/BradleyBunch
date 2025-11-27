@@ -87,7 +87,7 @@ export default function Highscores() {
         </tbody>
       </table>
       {betweenRounds 
-        ? (<button onClick={handleRound2}>Round 2</button>) 
+        ? (<button onClick={handleRound2}>Next Round</button>) 
         : (<button onClick={handlePlayAgain}>Play Again</button>)
       }
     </div>
