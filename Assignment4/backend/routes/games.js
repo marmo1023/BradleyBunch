@@ -9,7 +9,7 @@ module.exports = (dbInstance, io) => {
 
   //Helper: Creates a new deck of cards
   const generateDeck = () => {
-    const suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
+    const suits = ['hearts', 'diamonds', 'clubs', 'spades'];
     const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
     const deck = [];
     for (const suit of suits) {
@@ -41,6 +41,13 @@ module.exports = (dbInstance, io) => {
     return null;
   };
 
+  //Helper: Draws cards from deck to hand (max 3 cards in hand)
+  const drawCards = (playerState) => {
+    while (playerState.hand.length < 3 && playerState.deck.length > 0) {
+      playerState.hand.push(playerState.deck.pop());
+    }
+  };
+
   //Route: Starts the game
   router.post('/start', async (req, res) => {
     try {
@@ -54,18 +61,25 @@ module.exports = (dbInstance, io) => {
       const deck = shuffle(generateDeck());
 
       let state;
-      //Classic: 2 center face-up piles, 2 side face-down piles (5 each)
+      //Classic: 2 center face-up piles, each player has a side face-down pile (5 each)
       if (mode === 'classic') {
+        // deal center face-up cards first
+        const centerLeft = deck.pop();
+        const centerRight = deck.pop();
+        // deal side piles (5 each) to players
+        const side1 = deck.splice(0, 5);
+        const side2 = deck.splice(0, 5);
+
         state = {
-          center: { left: [deck.pop()], right: [deck.pop()] },
-          side: { left: deck.splice(0, 5), right: deck.splice(0, 5) },
+          center: { left: [centerLeft], right: [centerRight] },
           players: {
-            [game.player1]: { deck: deck.splice(0, 20), hand: [] },
-            [game.player2]: { deck: deck.splice(0, 20), hand: [] }
+            [game.player1]: { deck: deck.splice(0, 20), hand: [], side: side1 },
+            [game.player2]: { deck: deck.splice(0, 20), hand: [], side: side2 }
           },
           doubleSignify: { useSide: [], stalemate: [] }
         };
-      } 
+      }
+
       //California: 8 piles (4 per player), split deck between players
       else {
         const piles = [];
@@ -78,6 +92,11 @@ module.exports = (dbInstance, io) => {
           }
         };
       }
+
+      //Draw initial cards to each player's hand
+      drawCards(state.players[game.player1]);
+      drawCards(state.players[game.player2]);
+
       //Updates game state in DB
       await games.updateOne(
         { _id: game._id },
@@ -146,6 +165,9 @@ module.exports = (dbInstance, io) => {
       //Apply move
       target.push(card);
 
+      //Draw new card to player's hand
+      drawCards(p);
+
       //Check for winner
       const winner = checkWinner(state, game.player1, game.player2);
 
@@ -192,10 +214,15 @@ module.exports = (dbInstance, io) => {
       //Record player's signify
       if (!state.doubleSignify.useSide.includes(playerName)) state.doubleSignify.useSide.push(playerName);
 
-      //Move one card from each side pile to center piles
+      //Move one card from each player's side pile to the center piles when both have signified
       if (state.doubleSignify.useSide.length === 2) {
-        if (state.side.left.length) state.center.left.push(state.side.left.pop());
-        if (state.side.right.length) state.center.right.push(state.side.right.pop());
+        for (const pname of state.doubleSignify.useSide) {
+          const pSide = state.players[pname]?.side;
+          if (pSide && pSide.length) {
+            if (pname === game.player1) state.center.left.push(pSide.pop());
+            else state.center.right.push(pSide.pop());
+          }
+        }
         state.doubleSignify.useSide = [];
       }
 
@@ -215,6 +242,26 @@ module.exports = (dbInstance, io) => {
     } catch (err) { res.status(500).json({ error: 'Failed to use side piles' }); }
   });
 
+  //Route: Cancel a player's signify for using side piles
+  router.post('/cancelUseSide', async (req, res) => {
+    try {
+      const { gameId, playerName } = req.body;
+      if (!gameId || !playerName) return res.status(400).json({ error: 'Missing gameId or playerName' });
+      const game = await games.findOne({ _id: new ObjectId(gameId) });
+      if (!game) return res.status(404).json({ error: 'Game not found' });
+
+      const state = game.state;
+      if (Array.isArray(state.doubleSignify?.useSide)) {
+        state.doubleSignify.useSide = state.doubleSignify.useSide.filter((n) => n !== playerName);
+      }
+
+      //Update DB and broadcast
+      await games.updateOne({ _id: game._id }, { $set: { state } });
+      io.to(getRoom(gameId)).emit('stateUpdate', { gameId, state });
+      res.json({ success: true, state });
+    } catch (err) { res.status(500).json({ error: 'Failed to cancel useSide' }); }
+  });
+
   //Route: Classic Stalemate, reset piles
   router.post('/classicReset', async (req, res) => {
     try {
@@ -226,16 +273,18 @@ module.exports = (dbInstance, io) => {
 
       const state = game.state;
       if (!state.doubleSignify.stalemate.includes(playerName)) state.doubleSignify.stalemate.push(playerName);
-      const sidesEmpty = !state.side.left.length && !state.side.right.length;
+      const sidesEmpty = !(state.players[game.player1]?.side?.length) && !(state.players[game.player2]?.side?.length);
 
       //Reshuffle center piles into side piles for stalemate
       if (state.doubleSignify.stalemate.length === 2 && sidesEmpty) {
         const reshufflePile = [...state.center.left, ...state.center.right];
         shuffle(reshufflePile);
-        state.side.left = reshufflePile.splice(0, 5);
+        const p1Side = reshufflePile.splice(0, 5);
         state.center.left = reshufflePile.splice(0, 1);
         state.center.right = reshufflePile.splice(0, 1);
-        state.side.right = reshufflePile.splice(0, 5);
+        const p2Side = reshufflePile.splice(0, 5);
+        state.players[game.player1].side = p1Side;
+        state.players[game.player2].side = p2Side;
         state.doubleSignify.stalemate = [];
       }
       //Check for winner

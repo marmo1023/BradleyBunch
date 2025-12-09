@@ -11,7 +11,7 @@ export default function History() {
 
   useEffect(() => {
     if (!myName) return;
-    fetch(`http://localhost:5000/api/scores/:${myName}`)
+    fetch(`http://localhost:5000/api/scores/${myName}`)
       .then(res => res.json())
       .then(data => {
         const sorted = data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -29,25 +29,37 @@ export default function History() {
       <header>
         <h2>Previous Games for {myName}</h2>
       </header>
-      <table className="historyTable">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Outcome</th>
-            <th>Loser's Remaining Card Count</th>
-          </tr>
-        </thead>
-        <tbody>
-          {scores.map((s, i) => (
-            <tr key={i}>
-              <td>{s.playerName}</td>
-              <td>{s.outcome}</td>
-              <td>{s.losingCardsRemaining}</td>
+      {scores.length === 0 ? (
+        <div style={{ textAlign: 'center', color: '#cbd5e1', fontSize: '1.2rem', marginTop: '40px' }}>
+          No games recorded yet. Play your first game!
+        </div>
+      ) : (
+        <table className="historyTable">
+          <thead>
+            <tr>
+              <th>Winner</th>
+              <th>Result</th>
+              <th>Opponent Cards Left</th>
+              <th>Date</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-      <button onClick={() => navigate('/')}>Play again</button>
+          </thead>
+          <tbody>
+            {scores.map((s, i) => (
+              <tr key={i}>
+                <td>{s.playerName}</td>
+                <td style={{ color: s.outcome === 'win' ? '#10b981' : '#ef4444', fontWeight: '600' }}>
+                  {s.outcome === 'win' ? '✓ Won' : '✗ Lost'}
+                </td>
+                <td>{s.losingCardsRemaining}</td>
+                <td>{new Date(s.createdAt).toLocaleDateString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+      <div style={{ textAlign: 'center', marginTop: '32px' }}>
+        <button onClick={() => navigate('/')}>← Play Again</button>
+      </div>
     </div>
   );
 }

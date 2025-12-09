@@ -7,7 +7,7 @@ module.exports = (dbInstance) => {
   //Route: Saves a new score to DB
   router.post('/', async (req, res) => {
     try {
-      const { playerName, outcome, cardsRemaining, gameId } = req.body;
+      const { playerName, outcome, losingCardsRemaining, gameId } = req.body;
       //Null check
       if (!playerName || !outcome) return res.status(400).json({ error: 'Missing required fields' });
 

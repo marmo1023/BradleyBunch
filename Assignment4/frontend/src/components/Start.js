@@ -69,10 +69,8 @@ export default function Start() {
         }
       });
     };
-
     socket.on('gameStarted', onGameStarted);
     socket.on('gameStarted', onGameStartedWithState);
-
     return () => {
       socket.off('gameStarted', onGameStarted);
       socket.off('gameStarted', onGameStartedWithState);
@@ -80,7 +78,7 @@ export default function Start() {
   }, [socket, navigate, name, gameId]);
 
   return (
-    <div style={{ padding: 24 }}>
+    <div>
       <h2>Enter your Name:</h2>
       <input value={name} onChange={(e) => setName(e.target.value)}/>
       <button onClick={handleRegister} disabled={!name.trim()}>Join</button>
