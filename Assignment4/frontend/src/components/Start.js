@@ -18,15 +18,14 @@ export default function Start() {
         body: JSON.stringify({ name })
       });
       if (!res.ok) throw new Error('Failed to register player');
-    } catch (err) { alert(err.message); }
-    try {
-      const res = await fetch('http://localhost:5000/api/games/start', {
+      
+      const res2 = await fetch('http://localhost:5000/api/games/start', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ gameId })
       });
-      const msg = await res.json();
+      const msg = await res2.json();
       if (!res.ok) throw new Error(msg.error || 'Failed to start game');
     } catch (err) { alert(err.message); }
   };
