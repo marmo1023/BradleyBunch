@@ -14,7 +14,7 @@ export default function Start() {
     setMode(newMode);
     socket.emit('modeChanged', { gameId, mode: newMode });
   };
-  
+
   useEffect(() => {
     const onModeChanged = (data) => {
       if (data.gameId !== gameId) return;
@@ -78,10 +78,12 @@ export default function Start() {
   }, [socket, navigate, name, gameId]);
 
   return (
-    <div>
-      <h2>Enter your Name:</h2>
-      <input value={name} onChange={(e) => setName(e.target.value)}/>
-      <button onClick={handleRegister} disabled={!name.trim()}>Join</button>
+    <div className="mainContainer">
+      <h1>Enter your Name:</h1>
+      <div className="organizer">
+        <input className='textbox' value={name} onChange={(e) => setName(e.target.value)} />
+        <button onClick={handleRegister} disabled={!name.trim()}>Join</button>
+      </div>
       {players.length === 2 && (
         <div>
           <h3>Select Game Type:</h3>

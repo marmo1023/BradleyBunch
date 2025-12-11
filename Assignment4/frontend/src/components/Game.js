@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useRef } from 'react';
+import React, { useEffect, useState, useContext, useRef, computeCounts, initialState, state } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { SocketContext } from '../socket';
 import '../styles.css';
@@ -149,8 +149,8 @@ export default function Game() {
               style={{ cursor: 'default' }}
             />
           </div>
-            <div onDragOver={allowDrop} onDrop={onDropTo('center.left')}>
-              {state.center.left.length > 0 && (
+          <div onDragOver={allowDrop} onDrop={onDropTo('center.left')}>
+            {state.center.left.length > 0 && (
               <img src={`/images/${state.center.left[state.center.left.length - 1].suit}_${state.center.left[state.center.left.length - 1].value}.png`}
                 alt={`${state.center.left[state.center.left.length - 1].value} of ${state.center.left[state.center.left.length - 1].suit}`}
                 draggable

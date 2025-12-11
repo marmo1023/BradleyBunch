@@ -1,6 +1,7 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 import { SocketProvider } from './socket';
+import './styles.css';
 
 //Routes
 import Start from './components/Start';

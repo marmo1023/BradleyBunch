@@ -25,7 +25,7 @@ export default function History() {
   }, [socket, myName]);
 
   return (
-    <div>
+    <div className="mainContainer">
       <header>
         <h2>Previous Games for {myName}</h2>
       </header>
