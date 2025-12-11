@@ -65,8 +65,7 @@ input[type="radio"] {
   letter-spacing: 1px;
 }
 
-.classicBoard,
-.californiaBoard {
+.classicBoard {
   display: grid;
   gap: 12px;
   margin: 20px 0;

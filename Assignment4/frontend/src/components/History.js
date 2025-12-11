@@ -31,7 +31,7 @@ export default function History() {
       </header>
       {scores.length === 0 ? (
         <div style={{ textAlign: 'center', color: '#cbd5e1', fontSize: '1.2rem', marginTop: '40px' }}>
-          No games recorded yet. Play your first game!
+          No wins yet, keep playing!
         </div>
       ) : (
         <table className="historyTable">

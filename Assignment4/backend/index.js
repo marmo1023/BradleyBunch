@@ -66,12 +66,6 @@ dbo.connectToServer((err) => {
       io.to(room).emit('playerJoined', { socketId: socket.id, gameId });
     });
 
-    //Syncs mode change
-    socket.on('modeChanged', ({ gameId, mode }) => {
-      const room = `game:${gameId}`;
-      socket.to(room).emit('modeChanged', { gameId, mode });
-    });
-
     //Handle disconnect
     socket.on('disconnect', () => {
       console.log('Client disconnected:', socket.id);

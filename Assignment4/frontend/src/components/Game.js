@@ -8,7 +8,7 @@ export default function Game() {
   const location = useLocation();
   const socket = useContext(SocketContext);
 
-  const { gameId, myName, mode, endsAt, initialState } = location.state || {};
+  const { gameId, myName, endsAt, initialState } = location.state || {};
   const [state, setState] = useState(initialState || null);
   const [winner, setWinner] = useState(null);
   const [counts, setCounts] = useState({ me: 0, them: 0 });
@@ -135,11 +135,10 @@ export default function Game() {
   return (
     <div className="game-board">
       <header>
-        <h2>{mode === 'classic' ? 'Classic' : 'California'} Speed</h2>
+        <h2>Classic Speed</h2>
         {countdown > 0 && <div className="countdown">Starting in {countdown}…</div>}
         {winner && <strong>Winner: {winner}</strong>}
       </header>
-      {mode === 'classic' ? (
         <div className="classicBoard">
           <div className="opponentSidePile">
             <h4>{theirName}</h4>
@@ -178,26 +177,6 @@ export default function Game() {
             />
           </div>
         </div>
-      ) : (
-        <div className="californiaBoard">
-          {state.piles.map((pile, idx) => (
-            <div className="pile" key={idx} onDragOver={allowDrop} onDrop={onDropTo(`piles[${idx}]`)}>
-              <h5>Pile {idx + 1}</h5>
-              <div>
-                {pile.length > 0 && (
-                  <img
-                    src={`/images/${pile[pile.length - 1].suit}_${pile[pile.length - 1].value}.png`}
-                    alt={`${pile[pile.length - 1].value} of ${pile[pile.length - 1].suit}`}
-                    draggable
-                    onDragStart={onDragStart(pile[pile.length - 1])}
-                    className="card"
-                  />
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
       <h4>Your Hand</h4>
       <div className="hand">
         {(state.players[myName]?.hand || []).map((c, i) => (
@@ -214,8 +193,7 @@ export default function Game() {
       <h4>Your Count: {counts.me}</h4>
       <h4>Their Count: {counts.them}</h4>
       <button onClick={async () => {
-        const route = mode === 'classic' ? '/api/games/classicReset' : '/api/games/caliReset';
-        await fetch(`http://localhost:5000${route}`, {
+        await fetch(`http://localhost:5000/api/games/classicReset`, {
           method: 'POST',
           credentials: 'include',
           headers: { 'Content-Type': 'application/json' },

@@ -51,8 +51,8 @@ module.exports = (dbInstance, io) => {
   //Route: Starts the game
   router.post('/start', async (req, res) => {
     try {
-      const { gameId, mode } = req.body;
-      if (!gameId || !mode) return res.status(400).json({ error: 'Missing gameId or mode' });
+      const { gameId } = req.body;
+      if (!gameId) return res.status(400).json({ error: 'Missing gameId' });
       //Null check
       const game = await games.findOne({ _id: new ObjectId(gameId) });
       if (!game) return res.status(404).json({ error: 'Game not found' });
@@ -61,12 +61,8 @@ module.exports = (dbInstance, io) => {
       const deck = shuffle(generateDeck());
 
       let state;
-      //Classic: 2 center face-up piles, each player has a side face-down pile (5 each)
-      if (mode === 'classic') {
-        // deal center face-up cards first
         const centerLeft = deck.pop();
         const centerRight = deck.pop();
-        // deal side piles (5 each) to players
         const side1 = deck.splice(0, 5);
         const side2 = deck.splice(0, 5);
 
@@ -78,33 +74,19 @@ module.exports = (dbInstance, io) => {
           },
           doubleSignify: { useSide: [], stalemate: [] }
         };
-      }
-
-      //California: 8 piles (4 per player), split deck between players
-      else {
-        const piles = [];
-        for (let i = 0; i < 8; i++) piles.push([deck.pop()]);
-        state = {
-          piles,
-          players: {
-            [game.player1]: { deck: deck.splice(0, 22), hand: [] },
-            [game.player2]: { deck: deck.splice(0, 22), hand: [] }
-          }
-        };
-      }
 
       //Draw initial cards to each player's hand
       drawCards(state.players[game.player1]);
       drawCards(state.players[game.player2]);
 
-      //Updates game state in DB
+      //Updates game state
       await games.updateOne(
         { _id: game._id },
-        { $set: { state, mode, completed: false, winner: null } }
+        { $set: { state, completed: false, winner: null } }
       );
 
-      //Broadcasts game start to players
-      io.to(getRoom(gameId)).emit('gameStarted', { gameId, mode, state });
+      //Broadcasts game start
+      io.to(getRoom(gameId)).emit('gameStarted', { gameId, state });
       res.json({ success: true, state });
     } catch (err) { res.status(500).json({ error: 'Failed to start game' }); }
   });
@@ -301,60 +283,6 @@ module.exports = (dbInstance, io) => {
 
       res.json({ success: true, state, winner });
     } catch (err) { res.status(500).json({ error: 'Failed to reset stalemate' }); }
-  });
-
-  //Route: California Stalemate, reset piles
-  router.post('/caliReset', async (req, res) => {
-    try {
-      const { gameId } = req.body;
-      if (!gameId) return res.status(400).json({ error: 'Missing gameId' });
-      //Null check
-      const game = await games.findOne({ _id: new ObjectId(gameId) });
-      if (!game) return res.status(404).json({ error: 'Game not found' });
-
-      const state = game.state;
-      if (!state.piles || state.piles.length !== 8) return res.status(400).json({ error: 'Not in California mode or invalid piles' });
-
-      //Each side takes their 4 piles and shuffles back into their decks
-      const p1Piles = state.piles.slice(0, 4).flat();
-      const p2Piles = state.piles.slice(4, 8).flat();
-
-      state.players[game.player1].deck = shuffle([
-        ...state.players[game.player1].deck,
-        ...p1Piles
-      ]);
-      state.players[game.player2].deck = shuffle([
-        ...state.players[game.player2].deck,
-        ...p2Piles
-      ]);
-
-      //Redeal 4 new piles each (8 total)
-      const newPiles = [];
-      for (const pid of [game.player1, game.player2]) {
-        for (let i = 0; i < 4; i++) {
-          const pile = [];
-          if (state.players[pid].deck.length) {
-            pile.push(state.players[pid].deck.pop());
-          }
-          newPiles.push(pile);
-        }
-      }
-      state.piles = newPiles;
-
-      //Check for winner
-      const winner = checkWinner(state, game.player1, game.player2);
-
-      //Update game state in DB
-      await games.updateOne({ _id: game._id }, { $set: { state, winner, completed: !!winner } });
-
-      //Broadcast state update
-      io.to(getRoom(gameId)).emit('stateUpdate', { gameId, state, winner });
-
-      //Broadcast game complete if there is a winner
-      if (winner) io.to(getRoom(gameId)).emit('gameComplete', { gameId, winner });
-
-      res.json({ success: true, state, winner });
-    } catch (err) { res.status(500).json({ error: 'Failed to reset California mode' }); }
   });
 
   //Route: Reset all games
